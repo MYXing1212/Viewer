@@ -1,0 +1,37 @@
+#version 430 core
+uniform float roll;
+uniform image2D destTex;
+layout (local_size_x = 16, local_size_y = 16) in;
+
+void main()
+{
+	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	float localCoef = length(vec2(ivec2(gl_LocalInvocationID.xy)-8)/8.0);
+	float globalCoef = sin(float(gl_WorkGroupID.x + gl_WorkGroupID.y)*0.1 + roll)*0.5;
+	imageStore(destTex, storePos, vec4(1.0-globalCoef * localCoef, 0.0, 0.0, 0.0);
+}
+
+
+
+//layout (local_size_x = 16, local_size_y = 16) in;
+
+//// ´«µÝ¾í»ýºË
+//uniform float v[4];
+
+//layout (rgba32f, binding = 0) uniform image2D input_image;
+//layout (rgba32f, binding = 1) uniform image2D output_image;
+
+//shared vec4 scanline[16][16];
+
+//void main()
+//{
+//	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+//	scanline[pos.x][pos.y] = imageLoad(input_image, pos);
+//	barrier();
+//	vec4 data = vec4(1.0f);//scanline[pos.x][pos.y];
+//	//data.r = v[0] + data.r;
+//	//data.g = v[1] + data.g;
+//	//data.b = v[2] + data.b;
+//	//data.a = v[3] + data.a;
+//	imageStore(output_image, pos.xy, data);
+//}

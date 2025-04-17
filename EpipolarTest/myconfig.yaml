@@ -1,0 +1,39 @@
+%YAML:1.0
+datapath: "E:/data/temperature/2019-6-16-16h50"
+width: 5616
+height: 3744
+widthProjector: 1280
+heightProjector: 800
+targetInterval: 8
+bigRadius: 3
+smallRadius: 1.5
+
+circlesWidth: 41
+circlesHeight: 33
+bigTargetIds: "593,594,673,679,758"
+
+thresholdMultiFreqPhaseDiff: 1.5
+zMax: 800
+zMin: 180
+offsetFringe: 20
+offsetFringeHorizontal: 20
+numFrequencies: 3
+enableSavePics: true
+fringePitches: "13,14,15"
+
+radiusThreshLow: 12
+radiusThreshHigh: 300
+
+cannyThreshLow: 15
+cannyThreshHigh: 45
+
+fitError: 3.0
+subEdgeFitError: 1.0
+
+CommonViewCount: 12
+
+showMidPic: true
+
+fix_intrinsic: false
+
+

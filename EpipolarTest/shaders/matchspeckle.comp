@@ -1,0 +1,68 @@
+#version 450 core
+
+layout (local_size_x = 16, local_size_y = 12) in;
+layout (r8, binding = 0) uniform image2D imageLeft;
+layout (r8, binding = 1) uniform image2D imageRight;
+layout (r32f, binding = 2) uniform image2D imageDisparity;
+
+float std(int x, int y)
+{
+	float sum = 0.0;
+	float count = 0.0;
+
+	for(int j = -7; j < 8; ++j)
+	{
+		for(int i = -7; i< 8; ++i)
+		{
+			sum = sum + imageLoad(imageLeft, ivec2(x + i, y+j)).r;
+			count = count + 1.0;
+		}
+	}
+	float meanValue = sum / count;
+	sum = 0.0;
+	for(int j = -7; j < 8; ++j)
+	{
+		for(int i = -7; i <8; ++i)
+		{
+			sum = sum + (meanValue - imageLoad(imageLeft, ivec2(x+i, y+j)).r) * (meanValue - imageLoad(imageRight, ivec2(x+i, y+j)).r);
+		}
+	}
+	return sqrt(sum / count);
+}
+
+float sad(int x1, int x2, int y)
+{
+	float sum = 0.0;
+
+	for(int j = -7;j < 8; ++j)
+	{
+		for(int i = -7;i<8;++i)
+		{
+			sum += abs(imageLoad(imageLeft, ivec2(x1 + i, y + j)).r - imageLoad(imageRight, ivec2(x2 + i, y + j))).r;
+		}
+	}
+	return sum;
+}
+
+void main()
+{
+	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 fetchPos = storePos * 4;
+	float disparity = 0.0;
+	// if (std(fetchPos.x, fetchPos.y) > 0.02)
+	{
+		float sadValue = 0.0;
+		float minSadValue = 999999999.0;
+		int x = 0;
+		for(x = fetchPos.x - 128; x < fetchPos.x + 128; ++x)
+		{
+			sadValue = sad(fetchPos.x, x, fetchPos.y);
+			if(sadValue < minSadValue && sadValue < 255.0 * 0.05)
+			{
+				minSadValue = sadValue;
+				disparity = fetchPos.x - x;
+			}
+		}
+	}
+	imageStore(imageDisparity, storePos, vec4(disparity, 0.0, 0.0, 1.0));
+}

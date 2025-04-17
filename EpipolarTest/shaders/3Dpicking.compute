@@ -1,0 +1,96 @@
+// Compute shaders are part of openGL core since version 4.3
+#version 450
+
+layout(location = 0) uniform mat4 transform;  
+layout(location = 1) uniform vec2 mousePos;		// 归一化坐标 [-1, 1]
+
+layout (rgba32f, binding = 0) uniform image2D input_image;
+layout (rgba32f, binding = 1) uniform image2D output_image;
+
+layout (local_size_x = 1024, local_size_y = 1) in;
+
+
+
+// Declare main program function which is executed when
+// glDispatchCompute is called from the application.
+void main()
+{
+	const int batchSize = 1024;
+	
+	// 统计每个线程中最接近的点
+	vec4 data[batchSize];
+	uint index = gl_GlobalInvocationID.x;
+	//ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+
+	for(int i = 0;i<batchSize;i++)
+	{
+		ivec2 imgPos = ivec2(index, i);
+		data[i] = transform * imageLoad(input_image, imgPos);
+	}
+
+	//ivec2 imgPos = ivec2(0, pos.y);
+	
+	//vec4 data = imageLoad(input_image, pos);
+	//vec4 data = imageLoad(input_image, ivec2(0, pos.y));
+	//vec4 data = transform * imageLoad(input_image, imgPos);
+	
+	// 每个线程处理1000个点
+	//for(int i = 0;i<4000;i++)
+	//{
+	//	data[i] = transform * imageLoad(input_image, pos);
+	//}
+	
+	barrier();
+	//vec4 data = transform * vec4(0.0, 0.0, 0.0, 1.0);
+
+	//vec4 data2 = imageLoad(output_image, pos);
+
+	//float dist = length(vec2(data.x / data.w - mousePos.x, 
+	//	data.y / data.w - mousePos.y));
+
+	//data.w = 0.0;
+	
+	//if(dist < 0.01)
+	//	imageStore(output_image, imgPos, data);
+	//else 
+	//	imageStore(output_image, imgPos, vec4(0.0));
+
+	//ivec2 imgPos = ivec2(index, 0);
+	//data[0] = vec4(gl_LocalInvocationIndex, 0, 0, 0);
+	//imageStore(output_image, imgPos, vec4(index));
+
+	for(int i = 0;i<batchSize;i++)
+	{
+		ivec2 imgPos = ivec2(index, i);
+
+		float dist = length(vec2(data[i].x / data[i].w - mousePos.x, 
+			data[i].y / data[i].w - mousePos.y));
+		data[i].w = 0;
+		
+		//imageStore(output_image, imgPos, vec4(1.0));
+
+		if(dist < 0.01)
+			imageStore(output_image, imgPos, data[i]);
+		else 
+			imageStore(output_image, imgPos, vec4(0.0));
+	}
+
+
+	//for(int i = 0;i<4000;i++)
+	//{
+	//	float dist = length(vec2(data[i].x / data[i].w - mousePos.x, 
+	//		data[i].y / data[i].w - mousePos.y));
+		
+	//	if(dist < 0.01)
+	//		imageStore(output_image, pos, data[i]);
+	//	else 
+	//		imageStore(output_image, pos, vec4(0.0));
+	//}
+	////data = vec4(0.0);
+	////data.x = transform[3][0];
+	////data.y = transform[3][1];
+	////data.z = transform[3][2];
+	////data.w = transform[3][3];
+	
+	//imageStore(output_image, pos, data);	
+}
