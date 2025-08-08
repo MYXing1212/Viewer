@@ -187,6 +187,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BigImageRenderer.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="ElementGeoRenderer.h" />
     <ClInclude Include="EpipolarTest.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="xFreeTypeLib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BigImageRenderer.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="ElementGeoRenderer.cpp" />
     <ClCompile Include="EpipolarTest.cpp" />
@@ -253,6 +255,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\EpipolarTest.rc2" />
+    <None Include="shaders\bigimage.frag" />
+    <None Include="shaders\bigimage.vert" />
     <None Include="shaders\element_geo.frag" />
     <None Include="shaders\element_geo.vert" />
     <None Include="shaders\image.frag" />

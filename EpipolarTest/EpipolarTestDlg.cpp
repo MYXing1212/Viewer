@@ -8,6 +8,7 @@
 #include"MyConfig.h"
 #include "VectorRenderer.h"
 #include"fbomanager.h"
+#include"BigImageRenderer.h"
 
 #define WM_MY_MESSAGE (WM_USER+101)
 
@@ -39,8 +40,8 @@ std::vector<float> graysRow, graysCol;
 //glm::vec2 matchedPixelInTexture;			// 匹配的右相机的点在纹理坐标系下的坐标
 std::vector<cv::Mat> dataPrjMap;
 
-ImageRenderer patternLeft;
-ImageRenderer patternRight;
+BigImageRenderer patternLeft;
+BigImageRenderer patternRight;
 ElementGeoRenderer ele;
 VectorRenderer vecr;
 
@@ -275,9 +276,9 @@ void drop_callback(GLFWwindow* window, int count, const char** paths)
 		printf("ERROR: 无法显示该图片!\n");
 	}
 	cv::Mat img;
-	if (str == "bmp" || str == "jpg" || str == "png" || str == "tiff")
+	if (str == "bmp" || str == "jpg" || str == "png" || str == "tiff" || str =="jpeg")
 	{
-		img = cv::imread(filename);
+		img = cv::imread(filename, -1);
 		//img = DFT(img);
 	}
 	else if (str == "xml" || str == "yaml")
@@ -538,13 +539,13 @@ void updateInfo(std::string LRflag, glm::vec2 pixel, glm::vec3 rgb)
 	CString info;
 	if (LRflag == "L") 
 	{
-		printf("Left    R %.5f  G %.5f  B %.5f\n", rgb[0], rgb[1], rgb[2]);
+		printf("Left    R %.9f  G %.9f  B %.9f\n", rgb[0], rgb[1], rgb[2]);
 		info.Format(_T("左相片:\r\npos: [%d, %d]\r\nR: %f\r\nG %f\r\nB %f"), int(pixel.x), int(pixel.y), rgb.x, rgb.y, rgb.z);
 		theApp.m_pMainWnd->GetDlgItem(IDC_INFO_LEFT)->SetWindowTextW(info);
 	}
 	else if (LRflag == "R")
 	{
-		printf("Right    R %.5f  G %.5f  B %.5f\n", rgb[0], rgb[1], rgb[2]);
+		printf("Right    R %.9f  G %.9f  B %.9f\n", rgb[0], rgb[1], rgb[2]);
 		info.Format(_T("右相片:\r\npos: [%d, %d]\r\nR: %f\r\nG %f\r\nB %f"), int(pixel.x), int(pixel.y), rgb.x, rgb.y, rgb.z);
 		theApp.m_pMainWnd->GetDlgItem(IDC_INFO_RIGHT)->SetWindowTextW(info);
 	}
@@ -768,6 +769,11 @@ void CEpipolarTestDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	// 通过将纹理解压对齐参数设为1，这样才能确保不会有对齐问题。
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+	GLint internalFormat = GL_R32F;
+	GLint max_size;
+	glGetInternalformativ(GL_TEXTURE_2D, internalFormat, GL_MAX_WIDTH, 1, &max_size);
+	glGetInternalformativ(GL_TEXTURE_2D, internalFormat, GL_MAX_HEIGHT, 1, &max_size);
+
 	std::string datapath = Config::get<std::string>("datapath");
 
 	cv::Mat img0 = cv::Mat::zeros(100, 100, CV_8UC3);
@@ -799,7 +805,7 @@ void updateRender(GLFWwindow *window)
 	patternLeft.queryImageCoord(lastX, lastY);
 	patternRight.queryImageCoord(lastX, lastY);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	patternLeft.setNormalizeRange(showThreshLow, showThreshHigh);	// 归一化的上下限
 	patternRight.setNormalizeRange(showThreshLow_right, showThreshHigh_right);	// 归一化的上下限
@@ -844,7 +850,7 @@ void updateRender(GLFWwindow *window)
 	glViewport(SCR_WIDTH / 2, 0, SCR_WIDTH / 2, SCR_HEIGHT / 2);
 	ele.setGraySeqTexture(2, patternRight.texture);
 	
-	if (false)
+	//if (false)
 	/*	if (syncFlag)
 	{
 		if (matchedPtCol.empty())

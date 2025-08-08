@@ -105,6 +105,9 @@
     <ClInclude Include="fbomanager.h">
       <Filter>OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="BigImageRenderer.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EpipolarTest.cpp">
@@ -182,6 +185,9 @@
     <ClCompile Include="fbomanager.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="BigImageRenderer.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EpipolarTest.rc">
@@ -208,6 +214,12 @@
       <Filter>OpenGL</Filter>
     </None>
     <None Include="shaders\vecr_geo.vert">
+      <Filter>OpenGL</Filter>
+    </None>
+    <None Include="shaders\bigimage.frag">
+      <Filter>OpenGL</Filter>
+    </None>
+    <None Include="shaders\bigimage.vert">
       <Filter>OpenGL</Filter>
     </None>
   </ItemGroup>
